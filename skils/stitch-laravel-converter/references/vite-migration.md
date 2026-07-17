@@ -2,9 +2,13 @@
 
 Static UI exports often use Tailwind CSS via a CDN (`<script src="https://cdn.tailwindcss.com"></script>`). This is unacceptable for production Laravel applications. We must migrate the styling to Laravel's Vite build system.
 
-## 1. Extracting Tailwind Config
+If the project uses **Tailwind CSS v4**, use CSS-first configuration instead of generating `tailwind.config.js`.
 
-Find the `<script id="tailwind-config">` block in the raw HTML. It usually contains custom colors, fonts, and spacing.
+## Tailwind CSS v4 Path
+
+### 1. Extract Theme Tokens From HTML
+
+Find the `<script id="tailwind-config">` block in the raw HTML.
 
 **Raw HTML:**
 ```html
@@ -12,7 +16,9 @@ Find the `<script id="tailwind-config">` block in the raw HTML. It usually conta
     tailwind.config = {
         theme: {
             extend: {
-                colors: { primary: "#00288e" }
+                colors: {
+                    primary: "#00288e"
+                }
             }
         }
     }
@@ -20,26 +26,23 @@ Find the `<script id="tailwind-config">` block in the raw HTML. It usually conta
 ```
 
 **Action:**
-Copy the contents of `theme: { ... }` into your Laravel project's `tailwind.config.js` file.
+Translate `theme.extend` tokens into CSS `@theme` declarations in `resources/css/app.css`.
 
-**`tailwind.config.js`:**
-```javascript
-export default {
-    content: [
-        "./resources/**/*.blade.php",
-        "./resources/**/*.js",
-        "./resources/**/*.vue",
-    ],
-    theme: {
-        extend: {
-            colors: {
-                primary: "#00288e", // Migrated from HTML
-            }
-        },
-    },
-    plugins: [],
+**`resources/css/app.css`:**
+```css
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #00288e;
+}
+
+/* custom styles */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
 }
 ```
+
+If the project uses a different Tailwind major version, keep the JS config path instead.
 
 ## 2. Extracting Custom CSS
 
@@ -57,9 +60,11 @@ Move these styles into `resources/css/app.css`.
 
 **`resources/css/app.css`:**
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #00288e;
+}
 
 @layer utilities {
     .custom-scrollbar::-webkit-scrollbar {

@@ -22,7 +22,8 @@ Specialist in transforming raw HTML designs (usually with long and repetitive Ta
 3. **Extract Reusable Components** — Identify frequently used small UI elements (such as buttons, input forms, cards, alerts) and separate them into the `resources/views/components/` directory so they can be called using `<x-button>`, `<x-input>`, etc.
 4. **Clean Up Specific Pages (Views)** — Remove the global structure (`<html>`, `<head>`, `<body>`, Navbar, etc.) from specific pages (like `login.blade.php`, `dashboard.blade.php`).
 5. **Implement Layout & Components** — Wrap the specific page content with `@extends('layouts.app')` and `@section('content')` (or `<x-app-layout>`). Replace the raw HTML with Blade component calls.
-6. **Organize Tailwind Configuration** — If there is a Tailwind configuration script (like `tailwind.config = {...}` inside a `<script>` tag), move it to the appropriate file or keep it only in the Master Layout so it doesn't clutter every page.
+6. **Organize Tailwind & Vite** — Migrate the Tailwind CDN configuration into the proper `tailwind.config.js` and set up `resources/css/app.css` using Vite. Remove the CDN scripts.
+7. **Add Interactivity** — Use Alpine.js (`x-data`, `x-show`, `@click`) to replace static CSS states for elements like dropdowns, modals, and tabs.
 
 ## Reference Guide
 
@@ -32,6 +33,8 @@ Load detailed guidance based on context:
 |-------|-----------|-----------|
 | Layout & Structure | `references/layout-structure.md` | Setting up master layouts, extracting navbars, headers, sidebars, and footers |
 | Blade Components | `references/blade-components.md` | Extracting UI elements (buttons, inputs, cards) into reusable `<x-name>` components |
+| Interactivity (Alpine.js) | `references/alpinejs-integration.md` | Making static dropdowns, modals, and tabs clickable/interactive |
+| Asset Pipeline (Vite) | `references/vite-migration.md` | Migrating from Tailwind CDN to a production-ready Vite build |
 
 ## Constraints
 
@@ -40,6 +43,8 @@ Load detailed guidance based on context:
 - Maximize the use of Blade directives (`@extends`, `@section`, `@include`, `@push`, `@stack`, or slot components).
 - Maintain HTML semantics and *accessibility*.
 - Use `@push('scripts')` or `<x-slot:scripts>` for page-specific *javascript*.
+- Convert static CSS display toggles into Alpine.js states.
+- Migrate styling from CDN to Vite (`@vite(['resources/css/app.css', 'resources/js/app.js'])`).
 
 ### MUST NOT DO
 - Leave `<html>`, `<head>`, or `<body>` tags inside specific view files (except for the master layout).

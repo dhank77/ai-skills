@@ -2,7 +2,33 @@
 
 Extracting repeated UI elements into Blade Components (`resources/views/components/`) makes your codebase cleaner, smaller, and easier to maintain.
 
-## 1. Anonymous Blade Components
+## 1. Component Naming Contract
+
+Use consistent, semantic names so the codebase is scannable and diffs remain readable.
+
+| Pattern | Component Name | Directory |
+|---------|---------------|-----------|
+| Button (with variants) | `button` | `components/` |
+| Input with label + error | `input-group` | `components/` |
+| Stat card (icon + number + label) | `stat-card` | `components/` |
+| Card container | `card` | `components/` |
+| Icon (Material Symbols) | `icon` | `components/` |
+| Data table with headers | `data-table` | `components/` |
+| Empty state (no data) | `empty-state` | `components/` |
+| Search / filter bar | `search-bar` | `components/` |
+| Form section wrapper | `form-field` | `components/` |
+| Alert / notification | `alert` | `components/` |
+| Modal overlay | `modal` | `components/` |
+| Dropdown menu | `dropdown` | `components/` |
+
+### Naming Rules
+
+- Use kebab-case: `stat-card`, not `StatCard` or `stat_card`
+- Use noun phrases: `data-table`, not `table-data`
+- Avoid generic names: `box`, `wrapper`, `panel` → prefer semantic: `stat-card`, `form-section`
+- Do not name components after specific data: `user-card` → `stat-card` (unless data is truly domain-specific)
+
+## 2. Anonymous Blade Components
 
 For most UI elements (buttons, inputs, cards), Anonymous Blade Components are the best choice. They don't require a PHP class, just a `.blade.php` file in the `components` directory.
 
@@ -15,7 +41,7 @@ Raw HTML typically looks like this, repeated many times:
 </div>
 ```
 
-**Component Definition:**
+**Component Definition (preserves classes):**
 ```blade
 <div {{ $attributes->merge(['class' => 'bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm']) }}>
     {{ $slot }}
@@ -30,7 +56,7 @@ Raw HTML typically looks like this, repeated many times:
 </x-card>
 ```
 
-## 2. Using `@props` for Dynamic Classes
+## 3. Using `@props` for Dynamic Classes
 
 When an element has variations (like button colors), use `@props` to define defaults and handle the logic.
 
@@ -74,7 +100,7 @@ When an element has variations (like button colors), use `@props` to define defa
 </x-button>
 ```
 
-## 3. Form Input Components
+## 4. Form Input Components
 
 Form inputs often have repeated structures (label, input, error message).
 
@@ -87,13 +113,20 @@ Form inputs often have repeated structures (label, input, error message).
     'type' => 'text',
     'placeholder' => '',
     'required' => false,
-    'value' => null
+    'value' => null,
+    'error' => null,
+    'ariaDescribedBy' => null
 ])
+
+@php
+    $errorId = $name . '-error';
+    $describedBy = $ariaDescribedBy ?: ($error ? $errorId : null);
+@endphp
 
 <div class="flex flex-col gap-2">
     <label class="font-label-md text-on-surface ml-1" for="{{ $name }}">
         {{ $label }}
-        @if($required) <span class="text-error">*</span> @endif
+        @if($required) <span class="text-error" aria-hidden="true">*</span> @endif
     </label>
     
     <div class="relative">
@@ -104,13 +137,14 @@ Form inputs often have repeated structures (label, input, error message).
             value="{{ old($name, $value) }}" 
             placeholder="{{ $placeholder }}" 
             {{ $required ? 'required' : '' }}
+            {{ $describedBy ? 'aria-describedby="' . $describedBy . '"' : '' }}
             {{ $attributes->merge(['class' => 'w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none']) }}
         />
     </div>
     
-    @error($name)
-        <p class="text-error text-[12px] ml-1">{{ $message }}</p>
-    @enderror
+    @if($error)
+        <p id="{{ $errorId }}" class="text-error text-[12px] ml-1" role="alert">{{ $error }}</p>
+    @endif
 </div>
 ```
 
@@ -122,10 +156,11 @@ Form inputs often have repeated structures (label, input, error message).
     type="email" 
     placeholder="john@example.com" 
     required="true" 
+    :error="$errors->first('email')"
 />
 ```
 
-## 4. Icons
+## 5. Icons
 
 Instead of writing out the full Material Symbols span every time, create an icon component.
 
@@ -145,4 +180,41 @@ Instead of writing out the full Material Symbols span every time, create an icon
 **Usage:**
 ```blade
 <x-icon name="dashboard" class="text-primary text-[24px]" />
+```
+
+## 6. Diff-Friendly Extraction
+
+When extracting a component, preserve the original Tailwind class strings exactly as found in the raw HTML. Do not reorder or rewrite classes.
+
+**Original:**
+```html
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant form-shadow">
+    <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-[24px] text-primary">dashboard</span>
+        <div>
+            <p class="text-label-md text-on-surface-variant">Total Users</p>
+            <p class="text-headline-lg font-headline text-on-surface">1,234</p>
+        </div>
+    </div>
+</div>
+```
+
+**Component:**
+```blade
+<div {{ $attributes->merge(['class' => 'bg-surface-container-lowest p-6 rounded-xl border border-outline-variant form-shadow']) }}>
+    {{ $slot }}
+</div>
+```
+
+**Usage:**
+```blade
+<x-stat-card>
+    <div class="flex items-center gap-4">
+        <x-icon name="dashboard" class="text-primary text-[24px]" />
+        <div>
+            <p class="text-label-md text-on-surface-variant">Total Users</p>
+            <p class="text-headline-lg font-headline text-on-surface">1,234</p>
+        </div>
+    </div>
+</x-stat-card>
 ```

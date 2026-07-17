@@ -32,6 +32,7 @@ Specialist in bridging the gap between static Frontend UI designs and Laravel Ba
 - Use **descriptive variable names** when passing data to views (e.g., use `$courses` instead of a generic `$data`).
 - Handle **empty states** in the UI (e.g., using `@forelse` to show a "No data available" message if a collection is empty).
 - Retain the original HTML/Tailwind classes and styling when injecting dynamic data.
+- **Create Factories & Seeders** immediately after defining a model so the UI doesn't look empty when tested.
 
 ### MUST NOT DO
 - **Do not write database queries directly inside `.blade.php` files.** All data retrieval must happen in the Controller.
@@ -48,6 +49,7 @@ Load detailed guidance based on context:
 | Backend Architecture | `references/backend-architecture.md` | Creating Models, Migrations, Controllers, and defining Routes |
 | View Data Binding | `references/data-binding.md` | Mapping dynamic Eloquent data to HTML tables, grids, or lists |
 | Form Handling | `references/form-handling.md` | Updating static HTML forms with proper Laravel CSRF, routing, and validation display |
+| Mockup Data | `references/mockup-data-seeding.md` | Creating Factories and Seeders to populate the database with data matching the static UI |
 
 ## Code Templates
 

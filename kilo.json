@@ -1,0 +1,22 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "skills": [
+    {
+      "name": "stitch-laravel-converter",
+      "path": "skils/stitch-laravel-converter/SKILL.md",
+      "description": "Convert raw HTML/Tailwind design exports into clean Laravel Blade layouts, components, and Vite-ready assets."
+    },
+    {
+      "name": "stitch-laravel-functionalizer",
+      "path": "skils/stitch-laravel-functionalizer/SKILL.md",
+      "description": "Connect static Blade views to Laravel backend: models, migrations, routes, controllers, forms, validation, and dynamic data binding."
+    }
+  ],
+  "conventions": {
+    "laravel": {
+      "dry": true,
+      "accessibility": true,
+      "standard": true
+    }
+  }
+}

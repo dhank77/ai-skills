@@ -25,6 +25,15 @@ Additional skills may cover topics such as:
 3. Follow each skill's `SKILL.md` and bundled references before implementing.
 4. Add new skills under `skils/<skill-name>/` following the existing structure.
 
+## Installation
+
+Install individual skills into a Laravel project using Laravel Boost:
+
+```bash
+php artisan boost:add-skill dhank77/ai-skills --skill stitch-laravel-converter
+php artisan boost:add-skill dhank77/ai-skills --skill stitch-laravel-functionalizer
+```
+
 ## Notes
 
 - Skills should follow the project's general standards: DRY, accessibility, and framework conventions where applicable.
